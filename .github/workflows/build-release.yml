@@ -1,0 +1,51 @@
+name: Build and Release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+    - uses: actions/checkout@v4
+    
+    - uses: msys2/setup-msys2@v2
+      with:
+        msystem: MINGW64
+        update: true
+        install: >-
+          git
+          make
+          diffutils
+          mingw-w64-x86_64-pkg-config
+          mingw-w64-x86_64-go
+          mingw-w64-x86_64-toolchain
+          mingw-w64-x86_64-nasm
+          mingw-w64-x86_64-yasm
+          mingw-w64-x86_64-tools-git
+          mingw-w64-x86_64-libxmp
+          mingw-w64-x86_64-SDL2
+    
+    - name: Build
+      run: |
+        ./build/build.sh Win64
+    
+    - name: Upload to Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: bin/Ikemen_GO.exe
+        tag_name: kof-lifebar-build
+        name: KOF Lifebar Build
+        body: |
+          KOF97/KOF2002 style lifebar build
+          
+          Changes:
+          - Immediate mid bar decrease on hit when mid.freeze = 0
+          - Matches KOF97/KOF2002 behavior
+        draft: false
+        prerelease: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
