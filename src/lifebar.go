@@ -519,8 +519,9 @@ func (hb *HealthBar) step(ref int, hbr *HealthBar) {
 	hb.shift.anim.srcAlpha = int16(255 * (1 - life))
 	hb.shift.anim.dstAlpha = int16(255 * life)
 
+	// KOF97/KOF2002 Style: When mid.freeze = 0, don't set mlifetime to allow immediate decrease
 	if !hb.mid_freeze && getHit && !hb.gethit && len(hb.mid.anim.frames) > 0 {
-		hbr.mlifetime = hb.mid_delay
+		// Don't set mlifetime - let mid bar decrease immediately
 		hbr.midlife = hbr.oldlife
 		hbr.midlifeMin = hbr.oldlife
 	}
